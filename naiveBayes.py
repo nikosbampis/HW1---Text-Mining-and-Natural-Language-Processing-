@@ -10,41 +10,56 @@ import nltk
 def NaiveBayesTrain(Docs,Classes):
     
     Ndoc=len(Docs)
-    #αρχικοποιήσεις
+
+    # Initializing
     logprior=[]
     bigDoc=[]
     Vocabulary={}
+
     for i in range(len(Classes)):
         Nc=0
         bigDoc.append([])
-        #ενώνω όλες τις προτάσεις της κλάσης σε ένα μεγάλο doc
+
+        # Merge all sentences to one big documentation.
+
         for j in range(len(Docs)):
-            #δημιουργούμε το λεξικό ψάχνοντας,ενω όλα τα doc
+
+            # Create vocabulary searching for every documentation.
+
             Vocabulary=set(Vocabulary).union(set(Docs[j][0]))
             if(Docs[j][1]==Classes[i]):
                 bigDoc[i]=bigDoc[i]+Docs[j][0]
                 Nc=Nc+1
-        #υπολογίζουμε την πιθανότητα της κάθε κλάσης
+
+        # Calculate the probability of every class.
+
         logprior.append(math.log(Nc/Ndoc,10))
-        #παίρνουμε την συχνότητα εμφάνισης κάθε λέξης
+        # Calculate frequency of every word
+
         bigDoc[i]=nltk.FreqDist(w.lower() for w in bigDoc[i])
     dictionaryLength=len(Vocabulary)
     likelihoodKey=[]
     likelihood=[]
     for word in Vocabulary:
-        #υπολογίζουμε για κάθε λέξη την πιθανότητα να βρήσκεται σε κάθε κλάση
+
+        # Calculate the probability of a word being in a different class.
+
         for i in range(len(Classes)):
             count=bigDoc[i][word]
             likelihoodKey.append((word,Classes[i]))
             likelihood.append(math.log((count+1)/(len(bigDoc[i])+dictionaryLength)))
-    #αλλάζουμε την δομή σε λεξικό με κλειδί (λέξη,κλάση) και value την πιθανότητα
+
+    # Change structure to a vocabulary with key and value pairs.
+
     likelihoodDict=dict(zip(likelihoodKey,likelihood))
     return  likelihoodDict,logprior,Vocabulary
 
-def TestNaiveBayes(testdoc,model,Classes):
+def NaiveBayesTest(testdoc,model,Classes):
     max=-100
     clas=-1
-    #βρίσκομε ποιά κλάση έχει την μεγαλύτερη πιθανότητα
+
+    # Find class with the bigger probability.
+
     for i in range(len(Classes)):
         sum=0
         sum=model[1][i]
@@ -61,5 +76,5 @@ TheClasses=['-','+']
 TrainSet=[(['just','plain','boring'],'-'),(['entirely','predictable','and','lacks','energy'],'-'),(['no','surprises','and','very','few','laughs'],'-'),(['very','powerful'],'+'),(['the','most','fun','movie','of','the','summer'],'+')]       
 TrainSet[0][0]
 model=NaiveBayesTrain(TrainSet,TheClasses)    
-answer=TestNaiveBayes(['very','fun','and','powerful'],model,TheClasses)    
+answer=NaiveBayesTest(['very','fun','and','powerful'],model,TheClasses)
 print(answer)
