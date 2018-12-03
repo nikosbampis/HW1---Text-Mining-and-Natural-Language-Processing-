@@ -21,7 +21,6 @@ def NaiveBayesTrain(Docs,Classes):
         bigDoc.append([])
 
         # Merge all sentences to one big documentation.
-
         for j in range(len(Docs)):
 
             # Create vocabulary searching for every documentation.
@@ -32,10 +31,9 @@ def NaiveBayesTrain(Docs,Classes):
                 Nc=Nc+1
 
         # Calculate the probability of every class.
-
         logprior.append(math.log(Nc/Ndoc,10))
-        # Calculate frequency of every word
 
+        # Calculate frequency of every word
         bigDoc[i]=nltk.FreqDist(w.lower() for w in bigDoc[i])
     dictionaryLength=len(Vocabulary)
     likelihoodKey=[]
@@ -43,14 +41,12 @@ def NaiveBayesTrain(Docs,Classes):
     for word in Vocabulary:
 
         # Calculate the probability of a word being in a different class.
-
         for i in range(len(Classes)):
             count=bigDoc[i][word]
             likelihoodKey.append((word,Classes[i]))
             likelihood.append(math.log((count+1)/(len(bigDoc[i])+dictionaryLength)))
 
     # Change structure to a vocabulary with key and value pairs.
-
     likelihoodDict=dict(zip(likelihoodKey,likelihood))
     return  likelihoodDict,logprior,Vocabulary
 
@@ -59,7 +55,6 @@ def NaiveBayesTest(testdoc,model,Classes):
     clas=-1
 
     # Find class with the bigger probability.
-
     for i in range(len(Classes)):
         sum=0
         sum=model[1][i]
