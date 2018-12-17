@@ -19,6 +19,7 @@ def NaiveBayesTrain(Docs,Classes):
     classesDict=dict(zip(Classes,index))
     for i in range(Ndoc):
         tokens=word_tokenize(Docs[i][0])
+        tokens = [w.lower() for w in tokens]
          # Create vocabulary
         Vocabulary.update(set(tokens))
         #Merge all sentences to one big document for each class
@@ -50,12 +51,10 @@ def TestNaiveBayes(testdoc,model,Classes):
     for i in range(len(Classes)):
         sum=0
         sum=model[1][i]
-        print(sum)
         for word in testdoc:
             aset={word}
             if(set(aset).issubset(model[2])):
                 sum=sum+model[0][word,Classes[i]]
-        print(sum)
         if(sum>max):
             max=sum
             clas=Classes[i]
