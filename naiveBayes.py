@@ -27,7 +27,7 @@ def NaiveBayesTrain(Docs,Classes):
         #calculate the possibility for every class
         logprior[classesDict[Docs[i][1]]]=logprior[classesDict[Docs[i][1]]] + 1
     for i in range(len(Classes)):
-        logprior[i]=logprior[i]/Ndoc
+        logprior[i]=math.log(logprior[i]/Ndoc)
         # Calculate the frequency of every word
         bigDoc[i]=FreqDist(w.lower() for w in bigDoc[i])  
     dictionaryLength=len(Vocabulary)

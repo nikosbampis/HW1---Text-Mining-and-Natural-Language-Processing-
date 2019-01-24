@@ -5,6 +5,7 @@ import math
 from sklearn import datasets,model_selection
 
 def BernoulliNBTrain(Docs,Classes):
+    # Initializing
     Ndoc=len(Docs)
     index=[]
     logprior=[]
@@ -19,9 +20,13 @@ def BernoulliNBTrain(Docs,Classes):
     classesDict=dict(zip(Classes,index))
     for i in range(len(Docs)):
         tokens = word_tokenize(Docs[i][0])
+        tokens = [w.lower() for w in tokens]
+        #update the vocabulary
         Vocabulary.update(set(tokens))
+        #we transforming the tokens from list to set and back to list so the duplicates will be eliminated
         bigDoc[classesDict[Docs[i][1]]]=bigDoc[classesDict[Docs[i][1]]]+list(set(tokens))
         logprior[classesDict[Docs[i][1]]]=logprior[classesDict[Docs[i][1]]]+1
+    #Calculate the possibility foreach word in the vocabulary for every class
     for i in range(len(Classes)):
         bigDoc[i]=FreqDist(w.lower() for w in bigDoc[i])
         for word in Vocabulary:
@@ -31,10 +36,13 @@ def BernoulliNBTrain(Docs,Classes):
         logprior[i]=logprior[i]/Ndoc
     likelihoodDict=dict(zip(likelihoodKey,likelihood))
     return  likelihoodDict,logprior,Vocabulary,bigDoc
+
+
 def BernoulliNBTest(testDoc,model,Classes):
-    max=-100000
+    max=None
     clas=-1
     testDoc=set(testDoc)
+    #we want the class with the maximum sum
     for i in range(len(Classes)):
         sum=0
         sum=math.log(model[1][i])
@@ -43,13 +51,11 @@ def BernoulliNBTest(testDoc,model,Classes):
             if(set(aset).issubset(testDoc)):
                 sum=sum+math.log(model[0][word,Classes[i]])
             else:
-                if(model[0][word,Classes[i]]<1):
-                    sum=sum+math.log((1-model[0][word,Classes[i]]))
-                else:
-                    print(model[0][word,Classes[i]])
-                    print(word)
-        print(sum)
-        if(sum>max):
+                sum=sum+math.log((1-model[0][word,Classes[i]]))
+        if(max==None):
+            max=sum
+            clas=Classes[i]
+        elif(sum>max):
             max=sum
             clas=Classes[i]
     return max,clas
